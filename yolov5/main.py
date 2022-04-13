@@ -21,7 +21,7 @@ imgsz = 640
 my_confidence 		= 0.80 # 0.25
 my_threshold  		= 0.45 # 0.45
 my_filterclasses 	= None
-my_weight					= '/content/Thai-coin-detection/yolov5/weights/coin_v1-9_last.pt'
+my_weight					= '/content/CoinCounter/yolov5/weights/coin_v1-9_last.pt'
 
 device = select_device('')
 print('>> device',device.type)
@@ -54,9 +54,7 @@ def main_process(input_img):
 	if img.ndimension() == 3:
 		img = img.unsqueeze(0)
 	pred = model(img, augment=True)[0]
-	print("Pred1 : " + str(pred))
 	pred = non_max_suppression(pred, my_confidence, my_threshold, classes=my_filterclasses, agnostic=None)
-	print("Pred2 : " + str(pred))
 
 	total = 0
 	class_count = [0 for _ in range(len(names))]
@@ -81,6 +79,6 @@ def main_process(input_img):
 	return img0
 
 if __name__ == '__main__':
-  img = cv2.imread('/content/Thai-coin-detection/coin_dataset/images/set1_train/10.jpg')
+  img = cv2.imread('/content/CoinCounter/coin2.jpg')
   img = main_process(img).copy()
   cv2.imwrite('Resoot.jpg',img)
