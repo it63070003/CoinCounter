@@ -29,7 +29,6 @@ my_filterclasses 	= None
 my_weight					= '/content/CoinCounter/yolov5/weights/coin_v1-9_last.pt'
 
 device = select_device('')
-print('>> device',device.type)
 
 # Load model
 model = attempt_load(my_weight, map_location=device)	# load FP32 model
@@ -125,26 +124,36 @@ if __name__ == '__main__':
 	#เลขสมมุติ
 	y = np.array([coin_1_amount, coin_2_amount, coin_5_amount, coin_10_amount])
 	#plt.bar(x, y)
-	ax[0].bar(x, y, color='red')
+	
+	coin_bar = ax[0].bar(x, y, color='red')
+	ax[0].set_ylabel("Amount")
 	#plot2
 	#x = np.array(["1 Baht", "2 Baht", "5 Baht", "10 Baht"])
 	#เลขสมมุติ
 	y = np.array([coin_1_amount, coin_2_amount, coin_5_amount, coin_10_amount])
 	mylabels = ["1 Baht", "2 Baht", "5 Baht", "10 Baht"]
-	mycolors = ["black", "pink", "yellow", "#4CAF50"]
+	mycolors = ["orange", "pink", "yellow", "#4CAF50"]
+	if coin_1_amount == 0:
+		y[0] = 0
+		mylabels[0] = ""
+	if coin_2_amount == 0:
+		y[1] = 0
+		mylabels[1] = ""
+	if coin_5_amount == 0:
+		y[2] = 0
+		mylabels[2] = ""
+	if coin_10_amount == 0:
+		y[3] = 0
+		mylabels[3] = ""
+	#plt.bar(x, y)
+	if y[0] == 0 and y[1] == 0 and y[2] == 0 and y[3] == 0:
+		print("No Coin Detect In This Picture")
+	else:
+		ax[1].pie(y, labels = mylabels, colors = mycolors,startangle=90,
+        autopct = '%1.2f%%')
+
 
 	#plt.bar(x, y)
-	ax[1].pie(y, labels = mylabels, colors = mycolors)
 	text = fig.text(0.5, 0.02, 'Total: '+str(money_total)+' Baht', ha='center', va='center', size=16)
 	text.set_path_effects([path_effects.Normal()])
 	plt.savefig("report.jpg")
-
-	#OPEN Report
-	file = open("report.jpg", "rb")
-	image = file.read()
-	widgets.Image(
-		value=image,
-		format='jpg',
-		width=800,
-		height=560,
-	)
