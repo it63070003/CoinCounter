@@ -3,6 +3,7 @@ import numpy as np
 import datetime, time
 
 import os
+import shutil
 import time
 from pathlib import Path
 
@@ -15,6 +16,10 @@ from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages, letterbox
 from utils.general import check_img_size, non_max_suppression, apply_classifier, scale_coords, xyxy2xywh, plot_one_box, strip_optimizer, set_logging, increment_dir
 from utils.torch_utils import select_device, load_classifier, time_synchronized
+
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
+import ipywidgets as widgets
 
 imgsz = 640
 
@@ -40,6 +45,12 @@ colors = [
 	(51, 136, 222),	# 2Baht
 	(222, 51, 188),	# .50Baht
 	]
+
+coin_1_amount = 0
+coin_5_amount = 0
+coin_2_amount = 0
+coin_10_amount = 0
+money_total = 0
 
 def main_process(input_img):
 	img0 = input_img.copy()
@@ -68,7 +79,6 @@ def main_process(input_img):
 				label = '%sbaht (%.1f%%)' % (names[int(cls)], conf*100)
 				total += int(names[int(cls)])
 				plot_one_box(xyxy, img0, label=label, color=colors[int(cls)], line_thickness=3)
-				print(label)	
 	# cv2.rectangle(img0,(0,10),(250,90),(0,0,0),-1)
 	img0 = cv2.putText(img0, "10Baht "+str(class_count[2])+" coin", (10,45+25*1), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
 	img0 = cv2.putText(img0, " 5Baht "+str(class_count[0])+" coin", (10,45+25*2), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
@@ -76,9 +86,65 @@ def main_process(input_img):
 	img0 = cv2.putText(img0, " 1Baht "+str(class_count[1])+" coin", (10,45+25*4), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
 	img0 = cv2.putText(img0, " Total "+str(total)+" Baht", 					(10,45+25*5), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255,255,0), 2)
 	
+	global coin_1_amount
+	global coin_5_amount
+	global coin_2_amount
+	global coin_10_amount
+	global money_total
+
+	coin_10_amount += class_count[2]
+	coin_5_amount += class_count[0]
+	coin_2_amount += class_count[3]
+	coin_1_amount += class_count[1]
+	money_total += total
+
 	return img0
 
 if __name__ == '__main__':
-  img = cv2.imread('/content/CoinCounter/coin2.jpg')
-  img = main_process(img).copy()
-  cv2.imwrite('Resoot.jpg',img)
+	path, dirs, files = next(os.walk("./Upload_Coin"))
+	file_count = len(files)
+
+	try:
+		os.mkdir("Results")
+	except:
+		shutil.rmtree("Results")
+		os.mkdir("Results")
+	print("Coin Detecting")
+	for i in range(file_count):
+		img = cv2.imread('./Upload_Coin/'+str(i)+'.jpg')
+		img = main_process(img).copy()
+		cv2.imwrite('./Results/Resoot'+str(i)+'.jpg',img)
+	print("Coin Detection is Done")
+
+	fig, ax = plt.subplots(2, 1, figsize=(10,7))
+	fig.tight_layout()
+
+	#create subplots
+	#plot1
+	x = np.array(["1 Baht", "2 Baht", "5 Baht", "10 Baht"])
+	#เลขสมมุติ
+	y = np.array([coin_1_amount, coin_2_amount, coin_5_amount, coin_10_amount])
+	#plt.bar(x, y)
+	ax[0].bar(x, y, color='red')
+	#plot2
+	#x = np.array(["1 Baht", "2 Baht", "5 Baht", "10 Baht"])
+	#เลขสมมุติ
+	y = np.array([coin_1_amount, coin_2_amount, coin_5_amount, coin_10_amount])
+	mylabels = ["1 Baht", "2 Baht", "5 Baht", "10 Baht"]
+	mycolors = ["black", "pink", "yellow", "#4CAF50"]
+
+	#plt.bar(x, y)
+	ax[1].pie(y, labels = mylabels, colors = mycolors)
+	text = fig.text(0.5, 0.02, 'Total: '+str(money_total)+' Baht', ha='center', va='center', size=16)
+	text.set_path_effects([path_effects.Normal()])
+	plt.savefig("report.jpg")
+
+	#OPEN Report
+	file = open("report.jpg", "rb")
+	image = file.read()
+	widgets.Image(
+		value=image,
+		format='jpg',
+		width=800,
+		height=560,
+	)
