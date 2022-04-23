@@ -112,7 +112,7 @@ if __name__ == '__main__':
 	for i in range(file_count):
 		img = cv2.imread('./Upload_Coin/'+str(i)+'.jpg')
 		img = main_process(img).copy()
-		cv2.imwrite('./Results/Resoot'+str(i)+'.jpg',img)
+		cv2.imwrite('./Results/Result'+str(i)+'.jpg',img)
 	print("Coin Detection is Done")
 
 	fig, ax = plt.subplots(2, 1, figsize=(10,7))
