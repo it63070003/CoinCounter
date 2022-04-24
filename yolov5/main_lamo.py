@@ -14,8 +14,8 @@ from numpy import random
 
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages, letterbox
-from utils.general import check_img_size, non_max_suppression, apply_classifier, scale_coords, xyxy2xywh, plot_one_box, strip_optimizer, set_logging, increment_dir
-from utils.torch_utils import select_device, load_classifier, time_synchronized
+from utils.general import check_img_size, non_max_suppression, apply_classifier, scale_coords, xyxy2xywh, plot_one_box, strip_optimizer, set_logging
+from utils.torch_utils import select_device
 
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as path_effects
@@ -23,7 +23,7 @@ import ipywidgets as widgets
 
 imgsz = 640
 
-my_confidence 		= 0.80 # 0.25
+my_confidence 		= 0.4 # 0.25
 my_threshold  		= 0.45 # 0.45
 my_filterclasses 	= None
 my_weight					= '/content/CoinCounter/yolov5/weights/Lamo259.pt'
@@ -65,7 +65,6 @@ def main_process(input_img):
 		img = img.unsqueeze(0)
 	pred = model(img, augment=True)[0]
 	pred = non_max_suppression(pred, my_confidence, my_threshold, classes=my_filterclasses, agnostic=None)
-	print(pred)
 
 	total = 0
 	class_count = [0 for _ in range(len(names))]
