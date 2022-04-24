@@ -135,16 +135,12 @@ if __name__ == '__main__':
 	mycolors = ["orange", "pink", "yellow", "#4CAF50"]
 	if coin_1_amount == 0:
 		y[0] = 0
-		mylabels[0] = ""
 	if coin_2_amount == 0:
 		y[1] = 0
-		mylabels[1] = ""
 	if coin_5_amount == 0:
 		y[2] = 0
-		mylabels[2] = ""
 	if coin_10_amount == 0:
 		y[3] = 0
-		mylabels[3] = ""
 	#plt.bar(x, y)
 	if y[0] == 0 and y[1] == 0 and y[2] == 0 and y[3] == 0:
 		print("No Coin Detect In This Picture")

@@ -23,7 +23,7 @@ import ipywidgets as widgets
 
 imgsz = 640
 
-my_confidence 		= 0.4 # 0.25
+my_confidence 		= 0.40 # 0.25
 my_threshold  		= 0.45 # 0.45
 my_filterclasses 	= None
 my_weight					= '/content/CoinCounter/yolov5/weights/Lamo259.pt'
@@ -75,14 +75,14 @@ def main_process(input_img):
 			for *xyxy, conf, cls in reversed(det):
 				class_count[int(cls)] += 1
 				xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()
-				label = '%sbaht (%.1f%%)' % (names[int(cls)], conf*100)
-				total += int(names[int(cls)])
+				label = '%s (%.1f%%)' % (names[int(cls)], conf*100)
+				total += int(names[int(cls)][0])
 				plot_one_box(xyxy, img0, label=label, color=colors[int(cls)], line_thickness=3)
 	# cv2.rectangle(img0,(0,10),(250,90),(0,0,0),-1)
-	img0 = cv2.putText(img0, "10Baht "+str(class_count[2])+" coin", (10,45+25*1), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
-	img0 = cv2.putText(img0, " 5Baht "+str(class_count[0])+" coin", (10,45+25*2), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
-	img0 = cv2.putText(img0, " 2Baht "+str(class_count[3])+" coin", (10,45+25*3), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
-	img0 = cv2.putText(img0, " 1Baht "+str(class_count[1])+" coin", (10,45+25*4), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
+	img0 = cv2.putText(img0, "10Baht "+str(class_count[1])+" coin", (10,45+25*1), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
+	img0 = cv2.putText(img0, " 5Baht "+str(class_count[4])+" coin", (10,45+25*2), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
+	img0 = cv2.putText(img0, " 2Baht "+str(class_count[2])+" coin", (10,45+25*3), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
+	img0 = cv2.putText(img0, " 1Baht "+str(class_count[0])+" coin", (10,45+25*4), cv2.FONT_HERSHEY_DUPLEX, 0.7, (200,200,0), 2)
 	img0 = cv2.putText(img0, " Total "+str(total)+" Baht", 					(10,45+25*5), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255,255,0), 2)
 	
 	global coin_1_amount
@@ -91,10 +91,10 @@ def main_process(input_img):
 	global coin_10_amount
 	global money_total
 
-	coin_10_amount += class_count[2]
-	coin_5_amount += class_count[0]
-	coin_2_amount += class_count[3]
-	coin_1_amount += class_count[1]
+	coin_10_amount += class_count[1]
+	coin_5_amount += class_count[4]
+	coin_2_amount += class_count[2]
+	coin_1_amount += class_count[0]
 	money_total += total
 
 	return img0
@@ -135,22 +135,18 @@ if __name__ == '__main__':
 	mycolors = ["orange", "pink", "yellow", "#4CAF50"]
 	if coin_1_amount == 0:
 		y[0] = 0
-		mylabels[0] = ""
 	if coin_2_amount == 0:
 		y[1] = 0
-		mylabels[1] = ""
 	if coin_5_amount == 0:
 		y[2] = 0
-		mylabels[2] = ""
 	if coin_10_amount == 0:
 		y[3] = 0
-		mylabels[3] = ""
 	#plt.bar(x, y)
 	if y[0] == 0 and y[1] == 0 and y[2] == 0 and y[3] == 0:
 		print("No Coin Detect In This Picture")
 	else:
 		ax[1].pie(y, labels = mylabels, colors = mycolors,startangle=90,
-        autopct = '%1.2f%%')
+		autopct = '%1.2f%%')
 
 
 	#plt.bar(x, y)
